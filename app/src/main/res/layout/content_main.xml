@@ -15,7 +15,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Escaner Listo"
+        android:text="¡Hola!"
         android:textSize="20dp"
         android:id="@+id/main_text" />
 
@@ -37,7 +37,6 @@
         android:id="@+id/SendButton"
         android:onClick="sendText"
         android:layout_alignTop="@+id/ScanButton"
-        android:layout_toRightOf="@+id/main_text"
-        android:layout_toEndOf="@+id/main_text" />
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

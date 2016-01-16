@@ -17,6 +17,10 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.Locale;
+
 public class MainActivity extends Activity {
 
     static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
@@ -63,18 +67,37 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void sendText(View v) {
-        TextView t = (TextView) findViewById(R.id.main_text);
+    public void sendText(View v) throws UnsupportedEncodingException {
+        String text = ((TextView)findViewById(R.id.main_text)).getText().toString();
         NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter == null) {
             Toast toast = Toast.makeText(this, "No NFC available.", Toast.LENGTH_SHORT);
             toast.show();
         } else {
-            byte[] data = "Hola".getBytes();
-            NdefRecord record = new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], data);
+            byte[] data = text.getBytes( );
+            NdefRecord record = createRecord(text);
             NdefMessage message = new NdefMessage(new NdefRecord[]{record});
             nfcAdapter.setNdefPushMessage(message, this);
         }
+    }
+
+    public static NdefRecord createRecord(String text) {
+        Locale locale = Locale.ENGLISH;
+        boolean encodeInUtf8 = false;
+        byte[] langBytes = locale.getLanguage().getBytes(Charset.forName("US-ASCII"));
+
+        Charset utfEncoding = Charset.forName("UTF-16");
+        byte[] textBytes = text.getBytes(utfEncoding);
+
+        int utfBit = (1 << 7);
+        char status = (char) (utfBit + langBytes.length);
+
+        byte[] data = new byte[1 + langBytes.length + textBytes.length];
+        data[0] = (byte) status;
+        System.arraycopy(langBytes, 0, data, 1, langBytes.length);
+        System.arraycopy(textBytes, 0, data, 1 + langBytes.length, textBytes.length);
+
+        return new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], data);
     }
 
     //alert dialog for downloadDialog
