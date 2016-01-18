@@ -6,31 +6,23 @@ import android.app.Activity;
         import android.content.Intent;
         import android.net.Uri;
         import android.os.Bundle;
-        import android.view.View;
-        import android.widget.Toast;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.lang.reflect.Array;
 
 public class MainActivity extends Activity {
 
     static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
-
+    static String QR_DATA;
+    static String QR_FORMAT;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //set the main content layout of the Activity
         setContentView(R.layout.activity_main);
-    }
-
-    //product barcode mode
-    public void scanBar(View v) {
-        try {
-            //start the scanning activity from the com.google.zxing.client.android.SCAN intent
-            Intent intent = new Intent(ACTION_SCAN);
-            intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
-            startActivityForResult(intent, 0);
-        } catch (ActivityNotFoundException anfe) {
-            //on catch, show the download dialog
-            showDialog(MainActivity.this, "No Scanner Found", "Download a scanner code activity?", "Yes", "No").show();
-        }
     }
 
     //product qr code mode
@@ -75,10 +67,12 @@ public class MainActivity extends Activity {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 //get the extras that are returned from the intent
-                String contents = intent.getStringExtra("SCAN_RESULT");
-                String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
-                Toast toast = Toast.makeText(this, "Content:" + contents + " Format:" + format, Toast.LENGTH_LONG);
-                toast.show();
+                QR_DATA = intent.getStringExtra("SCAN_RESULT");
+                QR_FORMAT = intent.getStringExtra("SCAN_RESULT_FORMAT");
+                TextView t = (TextView) findViewById(R.id.main_text);
+                Toast.makeText(this, "toast",Toast.LENGTH_SHORT).show();
+                Creature monster=Creature_Factory.generate_creature(byteParser.qr_to_byte(QR_DATA));
+                t.setText(monster.toString());
             }
         }
     }
