@@ -16,17 +16,28 @@
         android:id="@+id/main_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Escaner Listo"
-        android:textSize="20dp" />
+        android:text="Un gato"
+        android:textSize="20dp"
+        android:id="@+id/main_text" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Scann"
-        android:id="@+id/button"
+        android:text="Scan"
+        android:id="@+id/ScanButton"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:onClick="scanQR"
         android:layout_marginBottom="59dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SEND"
+        android:id="@+id/SendButton"
+        android:onClick="sendText"
+        android:layout_alignTop="@+id/ScanButton"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
