@@ -93,8 +93,8 @@ public class Creature_Factory {
                 mutations[i]=mutation_table[id_list.get(i+14)%mutation_table.length];
             }
 
-            String [] skills = new  String[4];
-            for (int i=0;i<mutations.length;i++){
+            String [] skills = new  String[3];
+            for (int i=0;i<skills.length;i++){
                 String main=skill_table[id_list.get(18+i*2)%skill_table.length];
                 skills[i]=skill_mod_table[id_list.get(19+i*2)%skill_mod_table.length]+" "+main;
             }
@@ -151,7 +151,7 @@ public class Creature_Factory {
         }
 
         for (int i=0;i<personality_table.length;i++){
-            if (personality_table[i].equals(monster.getElement())){
+            if (personality_table[i].equals(monster.getPersonality())){
                 code[13]=(byte) i;
                 break;
             }
@@ -169,9 +169,25 @@ public class Creature_Factory {
         for (int i=0;i<monster.getSkills().length;i++){
             for (int j=0;j<skill_table.length;j++){
                 if (monster.getSkills()[i].contains(skill_table[j])){
-                    code[18+i]=(byte) j;
+                    code[18+i*2]=(byte) j;
                     break;
                 }
+            }
+			for (int j=0;j<skill_mod_table.length;j++){
+				if (monster.getSkills()[i].contains(skill_mod_table[j])){
+					code[19+i*2]=(byte) j;
+                    break;
+				}
+            }
+        }
+		code[30]=(byte) monster.getLevel();
+		code[29]=(byte) monster.getForce_train();
+		code[28]=(byte) monster.getWisdom_train();
+		code[27]=(byte) monster.getDextry_train();
+        for (int i=0;i<item_table.length;i++){
+            if (monster.getItem().contains(item_table[i])){
+                code[24]=(byte) i;
+                break;
             }
         }
         return  code;

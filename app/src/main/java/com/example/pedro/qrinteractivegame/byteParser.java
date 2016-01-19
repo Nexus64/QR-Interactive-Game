@@ -9,7 +9,7 @@ public class byteParser {
         str=str.replaceAll("http://","");
         str=str.replaceAll("www.","");
         str=str.replaceAll("/","");
-        while (str.length()<23){
+        while (str.length()<27){
             str+=str;
         }
         byte[] qr_code=str.getBytes();
