@@ -7,5 +7,9 @@ public class testing{
 		
 		Creature monster=Creature_Factory.generate_creature(byteParser.qr_to_byte(code));
 		System.out.println(monster.toString());
+
+		byte[] data=Creature_Factory.creature_to_byte(monster);
+		monster=Creature_Factory.generate_creature(data);
+		System.out.println(monster.toString());
 	}
 }

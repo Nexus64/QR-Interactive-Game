@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
     static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
     static String QR_DATA;
     static String QR_FORMAT;
-
+    private Creature currentCreature;
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
 
@@ -97,7 +97,22 @@ public class MainActivity extends Activity {
                 payload = records[j].getPayload();
             }
             TextView text = (TextView)findViewById(R.id.main_text);
-            text.setText(text.getText()+new String(payload).substring(5));
+
+            String code=new String(payload).substring(5);
+            //Toast.makeText(this, code.length()-2, Toast.LENGTH_SHORT).show();
+            String trun_code = code.replaceAll("([^0-9,])", "");
+            byte [] bytecode=new byte[31];
+            String [] split_code=trun_code.split(",");
+            for (int k =0; k<split_code.length;k++){
+                try {
+                   bytecode[k] = Byte.parseByte(split_code[k]);
+                }catch(Exception e) {
+                       Toast.makeText(this,e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+            }
+
+            currentCreature=Creature_Factory.generate_creature(bytecode);
+            text.setText(currentCreature.toString());
         }
 
     }
@@ -117,15 +132,25 @@ public class MainActivity extends Activity {
     }
 
     public void sendText(View v) throws UnsupportedEncodingException {
-        String text = ((TextView)findViewById(R.id.main_text)).getText().toString();
-        if (nfcAdapter == null) {
-            Toast toast = Toast.makeText(this, "No NFC available.", Toast.LENGTH_SHORT);
-            toast.show();
-        } else {
-            byte[] data = text.getBytes( );
-            NdefRecord record = createRecord(text);
-            NdefMessage message = new NdefMessage(new NdefRecord[]{record});
-            nfcAdapter.setNdefPushMessage(message, this);
+        String text="";
+        if(currentCreature==null){
+            Toast toast = Toast.makeText(this, "No Creature available.", Toast.LENGTH_SHORT);
+        }else {
+            //for(int i=0;i<Creature_Factory.creature_to_byte(currentCreature).length;i++) {
+             //   text += Creature_Factory.creature_to_byte(currentCreature)[i];
+            //}
+            //text=new String(Creature_Factory.creature_to_byte(currentCreature));
+            text=Arrays.toString(Creature_Factory.creature_to_byte(currentCreature));
+            ((TextView) findViewById(R.id.main_text)).setText(text+currentCreature.toString());
+
+            if (nfcAdapter == null) {
+                Toast toast = Toast.makeText(this, "No NFC available.", Toast.LENGTH_SHORT);
+                toast.show();
+            } else {
+                NdefRecord record = createRecord(text);
+                NdefMessage message = new NdefMessage(new NdefRecord[]{record});
+                nfcAdapter.setNdefPushMessage(message, this);
+            }
         }
     }
 
@@ -180,8 +205,8 @@ public class MainActivity extends Activity {
                 QR_FORMAT = intent.getStringExtra("SCAN_RESULT_FORMAT");
                 TextView t = (TextView) findViewById(R.id.main_text);
                 Toast.makeText(this, "toast",Toast.LENGTH_SHORT).show();
-                Creature monster=Creature_Factory.generate_creature(byteParser.qr_to_byte(QR_DATA));
-                t.setText(monster.toString());
+                currentCreature=Creature_Factory.generate_creature(byteParser.qr_to_byte(QR_DATA));
+                t.setText(currentCreature.toString());
             }
         }
     }

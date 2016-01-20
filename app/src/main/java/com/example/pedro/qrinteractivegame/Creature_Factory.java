@@ -14,52 +14,114 @@ import java.util.ArrayList;
 public class Creature_Factory {
     private static String[][] species_table={
             {"cat",    "10",    "10",   "10",   "5"},
-            {"dog",    "1",     "2",    "1",    "50"}
+            {"Troll",    "1",     "2",    "1",    "50"},
+            {"Goblin", "15", "12", "33", "8"},
+            {"Slime", "0", "1", "2", "3"},
+            {"Dragon", "100", "100", "100", "100"},
+            {"Squeleton", "1", "10", "20", "3"},
+            {"Ghost", "0", "99", "0","0"},
+            {"Ork", "70", "3", "20", "10"},
+            {"Zombie", "10", "30","4","99"},
+            {"Spider", "8", "8", "8", "88"},
+            {"Wolf", "10","20","50","20"}
     };
 
     private static String[] personality_table={
             "Violent",
-            "Shy"
+            "Shy",
+            "Hardy",
+            "Lonely",
+            "Brave",
+            "Adamant",
+            "Naughty",
+            "Bold",
+            "Docile",
+            "Relaxed",
+            "Impish"
     };
 
     private static String[] element_table={
-            "fire",
-            "water",
-            "ice"
+            "Fire",
+            "Water",
+            "Ice",
+            "Wind",
+            "Thunder",
+            "Ligth",
+            "Darkness",
+            "Soul",
+            "Void",
+            "Ground"
     };
 
     private static  String[] mutation_table={
-            "two heads",
-            "prensile claws",
-            "wings"
+            "Two heads",
+            "Prensile Claws",
+            "Wings",
+            "One eye",
+            "Horns",
+            "Iron Skin",
+            "Two rows of Tooth",
+            "Fire hair",
+            "Mouth in the Stomach"
     };
 
     private  static String[] skill_table={
-            "slash",
-            "magic blast",
-            "bite"
+            "Slash",
+            "Magic blast",
+            "Bite",
+            "Punch",
+            "Spell",
+            "Attack",
+            "Kick",
+            "Smash",
+            "Course",
+            "Apocalypse"
     };
 
     public static  String [] skill_mod_table={
             "fire",
             "toxic",
-            "letal"
+            "letal",
+            "Force",
+            "killer",
+            "air",
+            "dangerous",
+            "laser",
+            "metalic",
+            "secret"
     };
 
     public static String [] name_table={
             "saur",
             "ril",
-            "bob"
+            "bob",
+            "lil",
+            "chu",
+            "tir",
+            "lol",
+            "cat",
+            "mon",
+            "dile"
     };
 
     public static String [] item_table ={
-            "sword",
+            "nothing",
             "potion",
-            "bomb"
+            "bomb",
+            "gun",
+            "crystal",
+            "letter",
+            "food",
+            "armor",
+            "axe",
+            "coin",
+            "book",
+            "scroll",
+            "sword"
     };
     public static Creature generate_creature(byte [] code){
         Creature monster;
-        if (code.length<33){
+        if (code.length<31){
             System.out.print(code.length);
             monster=null;
         }else{
@@ -71,8 +133,9 @@ public class Creature_Factory {
             int l=id_list.size();
             String [] specie_data=species_table[id_list.get(00)%species_table.length];
 
-            String name=name_table[id_list.get(1)%name_table.length]+""
-                    +name_table[id_list.get(2)%name_table.length];
+            String [] name=new String[2];
+            name[0] =name_table[id_list.get(1)%name_table.length];
+            name[1]=name_table[id_list.get(2)%name_table.length];
             boolean genre = id_list.get(3)%2==0 ? false : true;
 
             int force=Integer.parseInt(specie_data[1]);
@@ -93,8 +156,8 @@ public class Creature_Factory {
                 mutations[i]=mutation_table[id_list.get(i+14)%mutation_table.length];
             }
 
-            String [] skills = new  String[4];
-            for (int i=0;i<mutations.length;i++){
+            String [] skills = new  String[3];
+            for (int i=0;i<skills.length;i++){
                 String main=skill_table[id_list.get(18+i*2)%skill_table.length];
                 skills[i]=skill_mod_table[id_list.get(19+i*2)%skill_mod_table.length]+" "+main;
             }
@@ -113,7 +176,7 @@ public class Creature_Factory {
     }
 
     public static byte [] creature_to_byte(Creature monster){
-        byte [] code=new byte [33];
+        byte [] code=new byte [31];
 
         for (int i=0;i<species_table.length;i++){
             if (species_table[i][0].equals(monster.getSpecie_name())){
@@ -121,13 +184,12 @@ public class Creature_Factory {
                 break;
             }
         }
-        for (int i=0; i<name_table.length;i++){
-            if (monster.getName().contains(name_table[i])){
-               if (monster.getName().indexOf(name_table[2])==0){
-                   code[1]=(byte) i;
-               }else{
-                   code[2]=(byte) i;
-               }
+
+        for (int i=0; i<name_table.length;i++) {
+            for (int j = 0; j < monster.getName().length; j++) {
+                if (monster.getName()[j] == name_table[i]) {
+                    code[j + 1] = (byte) i;
+                }
             }
         }
 
@@ -151,7 +213,7 @@ public class Creature_Factory {
         }
 
         for (int i=0;i<personality_table.length;i++){
-            if (personality_table[i].equals(monster.getElement())){
+            if (personality_table[i].equals(monster.getPersonality())){
                 code[13]=(byte) i;
                 break;
             }
@@ -169,9 +231,25 @@ public class Creature_Factory {
         for (int i=0;i<monster.getSkills().length;i++){
             for (int j=0;j<skill_table.length;j++){
                 if (monster.getSkills()[i].contains(skill_table[j])){
-                    code[18+i]=(byte) j;
+                    code[18+i*2]=(byte) j;
                     break;
                 }
+            }
+			for (int j=0;j<skill_mod_table.length;j++){
+				if (monster.getSkills()[i].contains(skill_mod_table[j])){
+					code[19+i*2]=(byte) j;
+                    break;
+				}
+            }
+        }
+		code[30]=(byte) monster.getLevel();
+		code[29]=(byte) monster.getForce_train();
+		code[28]=(byte) monster.getWisdom_train();
+		code[27]=(byte) monster.getDextry_train();
+        for (int i=0;i<item_table.length;i++){
+            if (monster.getItem().contains(item_table[i])){
+                code[24]=(byte) i;
+                break;
             }
         }
         return  code;

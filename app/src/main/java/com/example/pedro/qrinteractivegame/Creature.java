@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public class Creature {
     private String specie_name;     //id 00
-    private String name;            //id 01 02
+    private String name[];            //id 01 02
     private boolean genre;          //id 03
 
     private int force;              //id 04
@@ -32,7 +32,7 @@ public class Creature {
     private int health_train;       //id -05
     private String item;            //id -08 07 06
 
-    public Creature(String specie_name, String name, boolean genre, int force, int wisdom,
+    public Creature(String specie_name, String[] name, boolean genre, int force, int wisdom,
                     int dextry, int health, int force_mod, int wisdom_mod, int dextry_mod,
                     int health_mod, String element, String personality, String[] mutations,
                     String[] skills, int level, int force_train, int wisdom_train, int dextry_train,
@@ -62,7 +62,7 @@ public class Creature {
 
     public String getSpecie_name() {return specie_name;}
 
-    public String getName() {return name;}
+    public String [] getName() {return name;}
 
     public boolean isGenre() {return genre;}
 
@@ -134,7 +134,7 @@ public class Creature {
     public String toString() {
         return "Creature{" +
                 "specie_name='" + specie_name + '\'' +
-                ", name='" + name + '\'' +
+                ", name='" + name[0] + name[1]+'\'' +
                 ", genre=" + genre +
                 ", force=" + force +
                 ", wisdom=" + wisdom +
