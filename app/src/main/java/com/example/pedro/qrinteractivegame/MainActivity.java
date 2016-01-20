@@ -32,7 +32,7 @@ import java.util.Locale;
 
 import java.lang.reflect.Array;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements AccelerometerListener{
 
     static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
     static String QR_DATA;
@@ -54,6 +54,7 @@ public class MainActivity extends Activity {
 
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this,
                 getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        AccelerometerManager.startAccelerometerListening(this, this);
 
     }
 
@@ -61,6 +62,7 @@ public class MainActivity extends Activity {
     public void onStart() {
         super.onStart();
         //client.connect();
+        AccelerometerManager.startAccelerometerListening(this, this);
     }
 
     @Override
@@ -68,6 +70,8 @@ public class MainActivity extends Activity {
         super.onStop();
        // AppIndex.AppIndexApi.end(client, viewAction);
         //client.disconnect();
+        AccelerometerManager.stopAccelerometerListening();
+
     }
 
     @Override
@@ -75,12 +79,15 @@ public class MainActivity extends Activity {
         super.onResume();
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        AccelerometerManager.startAccelerometerListening(this, this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         nfcAdapter.disableForegroundDispatch(this);
+        AccelerometerManager.stopAccelerometerListening();
+
     }
 
     @Override
@@ -171,6 +178,12 @@ public class MainActivity extends Activity {
         System.arraycopy(textBytes, 0, data, 1 + langBytes.length, textBytes.length);
 
         return new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], data);
+    }
+
+    public void onShake(float force) {
+    }
+
+    public void onAccelerationChanged(float x, float y, float z) {
     }
 
     //alert dialog for downloadDialog
